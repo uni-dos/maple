@@ -1,0 +1,5 @@
+[wrap-git]
+directory = parson
+url = https://github.com/uni-dos/parson.git
+revision = mesonbuild
+

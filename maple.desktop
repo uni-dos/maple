@@ -1,0 +1,5 @@
+[Desktop Entry]
+Name=Maple
+Comment=A floating Wayland compositor
+Exec=maple
+Type=Application
