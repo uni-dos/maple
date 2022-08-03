@@ -5,7 +5,7 @@
 #include <wlr/backend.h>
 
 // everything needed to be a wayland compositor
-// the server is the wm
+// the server is the wm; holds its state
 struct maple_server {
     
     struct wl_display *wl_display;
@@ -15,9 +15,12 @@ struct maple_server {
     
 };
 
-void server_init(struct maple_server *server);
+// initilize most of the parameters in server
+bool server_init(struct maple_server *server);
 
-void server_destroy(struct maple_server *server);
+bool server_run(struct maple_server *server);
+
+bool server_destroy(struct maple_server *server);
 
 
 #endif

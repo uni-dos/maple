@@ -16,7 +16,7 @@ add_project_arguments(
     ], 
     language : 'c')
 
-wlroots_ver = ['>=0.16.0', '<0.17.0']
+wlroots_ver = ['>=0.15.0', '<0.16.0']
 
 # use wlroots on system if correct version else build from source
 # subproject name then the dependency name
