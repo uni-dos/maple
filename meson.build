@@ -1,4 +1,4 @@
-project (
+project(
     'maple', 'c',
     version : '0.0.0-alpha',
     meson_version: '>=0.60.2',
@@ -18,12 +18,16 @@ add_project_arguments(
 
 wlroots_ver = ['>=0.16.0', '<0.17.0']
 
-#use wlroots on system if correct version else build from source
+# use wlroots on system if correct version else build from source
+# subproject name then the dependency name
 wlroots_dep = dependency('wlroots', version : wlroots_ver, 
     fallback : ['wlroots', 'wlroots'], 
     default_options : ['examples=false', 'default_library=static'])
 
+# will either use cairo or thorvg for graphics
+
 xkbcommon_dep = dependency('xkbcommon')
+
 parson_dep = dependency('parson', fallback : ['parson', 'parson'],
     default_options : ['default_library=static'])
 

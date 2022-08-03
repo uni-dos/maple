@@ -4,8 +4,8 @@
 #include <wayland-server-core.h>
 #include <wlr/backend.h>
 
-// everything needed to be a compositor
-// the server is the compositor
+// everything needed to be a wayland compositor
+// the server is the wm
 struct maple_server {
     
     struct wl_display *wl_display;
