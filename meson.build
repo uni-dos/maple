@@ -16,6 +16,9 @@ add_project_arguments(
     ], 
     language : 'c')
 
+wayland_server_dep = dependency('wayland-server')
+wayland_protos_dep = dependency('wayland-protocols')
+
 wlroots_ver = ['>=0.15.0', '<0.16.0']
 
 # use wlroots on system if correct version else build from source
@@ -30,9 +33,6 @@ xkbcommon_dep = dependency('xkbcommon')
 
 parson_dep = dependency('parson', fallback : ['parson', 'parson'],
     default_options : ['default_library=static'])
-
-wayland_server_dep = dependency('wayland-server')
-wayland_protos_dep = dependency('wayland-protocols')
 
 subdir('protocols')
 subdir('src')

@@ -2,4 +2,4 @@
 directory = wlroots
 url = https://gitlab.freedesktop.org/wlroots/wlroots/
 revision = 0.15.1
-depth = 1
+
