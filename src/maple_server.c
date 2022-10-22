@@ -1,3 +1,5 @@
+#define _POSIX_C_SOURCE 200809L
+#include <stdlib.h>
 #include "maple_server.h"
 #include <wlr/util/log.h>
 
@@ -11,14 +13,6 @@ bool server_init(struct maple_server *server)
     if (server->wl_display == NULL) 
     {
         wlr_log(WLR_ERROR, "Failed to create to Wayland display");
-        return false;
-    }
-        
-
-    server->wl_event_loop = wl_display_get_event_loop(server->wl_display);
-    if (server->wl_event_loop == NULL)
-    {
-        wlr_log(WLR_ERROR, "Failed to connect to event loop");
         return false;
     }
 
@@ -36,18 +30,31 @@ bool server_init(struct maple_server *server)
 
 bool server_run(struct maple_server *server)
 {
-    if (!wlr_backend_start(server->backend)) {
+
+    const char *socket = wl_display_add_socket_auto(server->wl_display);
+
+    if (!socket)
+    {
+        wlr_backend_destroy(server->backend);
+        return false;
+    }
+
+    if (!wlr_backend_start(server->backend))
+    {
         wlr_log(WLR_ERROR, "Failed to start backend");
         wlr_backend_destroy(server->backend);
         wl_display_destroy(server->wl_display);
         return false;
     }
-    
+
+    setenv("WAYLAND_DISPLAY", socket, true);
+
     return true;
 }
 
 bool server_destroy(struct maple_server *server) 
 {
     
-
+    wl_display_destroy(server->wl_display);
+    return true;
 }
