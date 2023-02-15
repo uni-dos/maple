@@ -3,12 +3,15 @@ export CXX := "clang++"
 export CC_LD := "mold"
 export CCXX_LD := "mold"
 
+
+default: build-run
+
 rebuild:
-  ninja -C build/
+  samu -C build/
   
 build:
   meson build
-  ninja -C build/
+  samu -C build/
 
 run:
   ./build/src/maple

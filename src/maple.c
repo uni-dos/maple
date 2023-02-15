@@ -6,7 +6,7 @@ int main(int argc, char** argv)
 
     server_init(&server);
     server_run(&server);
-    
+
     wl_display_run(server.wl_display);
 
     server_destroy(&server);
