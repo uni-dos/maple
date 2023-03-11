@@ -1,16 +1,16 @@
 export CC := "clang"
 export CXX := "clang++"
-export CC_LD := "mold"
-export CCXX_LD := "mold"
+#export CC_LD := "mold"
+#export CCXX_LD := "mold"
 
 
 default: build-run
 
 rebuild:
   samu -C build/
-  
+
 build:
-  meson build
+  meson setup build
   samu -C build/
 
 run:
