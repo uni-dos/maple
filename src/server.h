@@ -7,11 +7,15 @@
 // everything needed to be a wayland compositor
 // the server is the wm; holds its state
 struct maple_server {
-    
+
     struct wl_display *wl_display;
 
     struct wlr_backend *backend;
-    
+
+    //physical displays/what we can see
+    struct wl_list outputs;
+    struct wl_listener new_output;
+
 };
 
 // initilize most of the parameters in server

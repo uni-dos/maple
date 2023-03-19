@@ -1,16 +1,16 @@
 #define _POSIX_C_SOURCE 200809L
 #include <stdlib.h>
-#include "maple_server.h"
+#include "server.h"
 #include <wlr/util/log.h>
 
-bool server_init(struct maple_server *server) 
-{    
+bool server_init(struct maple_server *server)
+{
     /*
         don't need the if statements but will
         be easier to find issues
     */
     server->wl_display = wl_display_create();
-    if (server->wl_display == NULL) 
+    if (server->wl_display == NULL)
     {
         wlr_log(WLR_ERROR, "Failed to create to Wayland display");
         return false;
@@ -23,7 +23,8 @@ bool server_init(struct maple_server *server)
         wlr_log(WLR_ERROR, "Failed to create backend");
         return false;
     }
-        
+
+    wl_list_init(&server->outputs);
 
     return true;
 }
@@ -52,9 +53,9 @@ bool server_run(struct maple_server *server)
     return true;
 }
 
-bool server_destroy(struct maple_server *server) 
+bool server_destroy(struct maple_server *server)
 {
-    
+
     wl_display_destroy(server->wl_display);
     return true;
 }

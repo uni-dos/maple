@@ -1,6 +1,7 @@
 maple_sources = [
     'maple.c',
-    'maple_server.c'
+    'output.c',
+    'server.c'
 ]
 
 maple_dependencies  = [
