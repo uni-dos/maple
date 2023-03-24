@@ -1,13 +1,18 @@
-#include "maple_server.h"
-
+#include "server.h"
+#include <wlr/util/log.h>
 int main(int argc, char** argv)
 {
-    struct maple_server server;
+    (void) argc;
+    (void) argv;
 
-    server_init(&server);
+    struct maple_server server = {0};
+
+    if (!server_init(&server))
+    {
+        wlr_log(WLR_ERROR, "Server failed to initilize");
+        return 1;
+    }
     server_run(&server);
-
-    wl_display_run(server.wl_display);
 
     server_destroy(&server);
 
