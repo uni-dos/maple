@@ -90,14 +90,18 @@ bool server_init(struct maple_server *server)
 
     set_up_output(server);
 
-    /*Create a scene graph. This is a wlroots abstraction that handles all
+    /* Create a scene graph. This is a wlroots abstraction that handles all
     rendering and damage tracking. All the compositor author needs to do
     is add things that should be rendered to the scene graph at the proper
     positions and then call wlr_scene_output_commit() to render a frame if
-    necessary.*/
+    necessary. */
     server->scene = wlr_scene_create();
-    wlr_scene_attach_output_layout(server->scene, server->output_layout);
+    if(!wlr_scene_attach_output_layout(server->scene, server->output_layout)) {
+        wlr_log(WLR_ERROR, "Failed to attach output to scene graph");
+    }
 
+    setup_cursor(server);
+    
     return true;
 }
 

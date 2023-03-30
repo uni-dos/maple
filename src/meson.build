@@ -1,4 +1,5 @@
 maple_sources = [
+    'cursor.c',
     'maple.c',
     'output.c',
     'server.c'

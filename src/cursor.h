@@ -3,14 +3,16 @@
 #include <wlr/types/wlr_cursor.h>
 #include <wlr/types/wlr_xcursor_manager.h>
 
-//maybe used to change the cursor image?
+extern struct maple_server server;
+
+// maybe used to change the cursor image?
 enum maple_cursor_mode {
     CURSOR_PASSTHROUGH,
     CURSOR_MOVE,
     CURSOR_RESIZE,
 };
 
-//holds the state for the cursor
+// holds the state for the cursor
 struct maple_cursor {
     enum maple_cursor_mode cursor_mode;
     struct wlr_cursor *wlr_cursor;
@@ -28,4 +30,6 @@ struct maple_cursor {
     struct wl_listener cursor_frame;
 
 };
+
+void setup_cursor(struct maple_server *server);
 #endif

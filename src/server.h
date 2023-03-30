@@ -5,7 +5,6 @@
 #include <wlr/backend.h>
 #include <wlr/types/wlr_output_layout.h>
 #include <wlr/types/wlr_scene.h>
-
 #include "cursor.h"
 
 // everything needed to be a wayland compositor
