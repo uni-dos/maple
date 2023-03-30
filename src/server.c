@@ -1,12 +1,13 @@
 #include <stdlib.h>
-#include "server.h"
-#include "output.h"
-#include <wlr/util/log.h>
+#include <wayland-server-core.h>
 #include <wlr/render/allocator.h>
 #include <wlr/render/wlr_renderer.h>
-#include <wlr/types/wlr_data_device.h>
 #include <wlr/types/wlr_compositor.h>
+#include <wlr/types/wlr_data_device.h>
 #include <wlr/types/wlr_subcompositor.h>
+#include <wlr/util/log.h>
+#include "output.h"
+#include "server.h"
 
 static void setup_socket(struct maple_server *server)
 {
@@ -108,7 +109,7 @@ void server_run(struct maple_server *server)
 
 void server_destroy(struct maple_server *server)
 {
-    wlr_backend_destroy(server->backend);
 
+    wl_display_destroy_clients(server->wl_display);
     wl_display_destroy(server->wl_display);
 }

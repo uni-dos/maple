@@ -1,10 +1,12 @@
-#ifndef MAPLE_SERVER
-#define MAPLE_SERVER
+#ifndef MAPLE_SERVER_H
+#define MAPLE_SERVER_H
 
 #include <wayland-server-core.h>
 #include <wlr/backend.h>
 #include <wlr/types/wlr_output_layout.h>
 #include <wlr/types/wlr_scene.h>
+
+#include "cursor.h"
 
 // everything needed to be a wayland compositor
 // the server is the wm; holds its state
@@ -19,10 +21,12 @@ struct maple_server {
     struct wlr_allocator *allocator;
     struct wlr_scene *scene;
 
-    //physical displays/what we can see
+    //list of all physical displays/what we can see
     struct wl_list outputs;
     struct wlr_output_layout *output_layout;
     struct wl_listener new_output;
+
+    struct maple_cursor *cursor;
 
 };
 

@@ -1,9 +1,9 @@
-#ifndef MAPLE_OUTPUT
-#define MAPLE_OUTPUT
+#ifndef MAPLE_OUTPUT_H
+#define MAPLE_OUTPUT_H
 
-#include "server.h"
-#include "wlr/types/wlr_output.h"
 #include <wayland-server-core.h>
+#include <wlr/types/wlr_output.h>
+#include "server.h"
 
 /* holds the state for the output/display */
 struct maple_output {

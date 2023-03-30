@@ -1,5 +1,5 @@
-#include "server.h"
 #include <wlr/util/log.h>
+#include "server.h"
 int main(int argc, char** argv)
 {
     (void) argc;
