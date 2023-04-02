@@ -31,6 +31,8 @@ wlroots_dep = dependency('wlroots', version : wlroots_ver,
 
 xkbcommon_dep = dependency('xkbcommon')
 
+gtk_dep = dependency('gtk4')
+
 parson_dep = dependency('parson', fallback : ['parson', 'parson'],
     default_options : ['default_library=static'])
 

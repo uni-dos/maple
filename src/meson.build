@@ -6,6 +6,7 @@ maple_sources = [
 ]
 
 maple_dependencies  = [
+    gtk_dep,
     parson_dep,
     server_protos,
     wlroots_dep

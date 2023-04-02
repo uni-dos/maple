@@ -7,6 +7,7 @@
 #include <wlr/util/log.h>
 #include <wlr/types/wlr_output_layout.h>
 
+/* Called every time the output is ready to display a frame */
 static void output_frame_notify(struct wl_listener *listener, void *data) {
     // not doing anyhting with this
     (void) data;
@@ -35,17 +36,24 @@ static void output_destroy_notify(struct wl_listener * listener, void *data) {
     free(output);
 }
 
-//called each time a new display is added
+/* Called each time a new display becomes available */
 static void new_output_notify(struct wl_listener *listener, void *data) {
     struct maple_server *server = wl_container_of(listener, server, new_output);
     struct wlr_output *wlr_output = data;
 
+    /* Configures the output created by the backend to use our allocator
+    * and our renderer. Must be done once, before commiting the output */
     if(!wlr_output_init_render(wlr_output, server->allocator, server->renderer))
     {
         wlr_log(WLR_ERROR, "Failed to initilize output renderer");
         return;
     }
 
+    /* Some backends don't have modes. DRM+KMS does, and we need to set a mode
+    * before we can use the output. The mode is a tuple of (width, height,
+    * refresh rate), and each monitor supports only a specific set of modes. We
+    * just pick the monitor's preferred mode, a more sophisticated compositor
+    * would let the user configure it. */
     if (!wl_list_empty(&wlr_output->modes)) {
         struct wlr_output_mode *mode = wl_container_of(wlr_output->modes.prev, mode, link);
         wlr_output_set_mode(wlr_output, mode);
@@ -57,10 +65,12 @@ static void new_output_notify(struct wl_listener *listener, void *data) {
     output->server = server;
     output->wlr_output = wlr_output;
 
-
+    /* Sets up a listener for the frame event */
     output->frame.notify = output_frame_notify;
     wl_signal_add(&wlr_output->events.frame, &output->frame);
 
+
+    /* Sets up a listener for the destroy event */
     output->destroy.notify = output_destroy_notify;
     wl_signal_add(&wlr_output->events.destroy, &output->destroy);
 
@@ -76,8 +86,6 @@ static void new_output_notify(struct wl_listener *listener, void *data) {
     * display, which Wayland clients can see to find out information about the
     * output (such as DPI, scale factor, manufacturer, etc).*/
     wlr_output_layout_add_auto(server->output_layout, wlr_output);
-
-
 }
 
 void set_up_output(struct maple_server *server) {
