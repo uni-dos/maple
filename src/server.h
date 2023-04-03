@@ -32,7 +32,6 @@ struct maple_server {
 // initilize most of the parameters in server
 bool server_init(struct maple_server *server);
 
-void server_run(struct maple_server *server);
 
 void server_destroy(struct maple_server *server);
 

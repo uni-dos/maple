@@ -12,8 +12,9 @@ int main(int argc, char** argv)
         wlr_log(WLR_ERROR, "Server failed to initilize");
         return 1;
     }
-    server_run(&server);
 
+    wl_display_run(server.wl_display);
+    
     server_destroy(&server);
 
     return 0;

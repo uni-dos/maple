@@ -30,6 +30,7 @@ static void setup_socket(struct maple_server *server)
     }
 
     setenv("WAYLAND_DISPLAY", socket, true);
+    wlr_log(WLR_INFO, "Running maple on WAYLAND_DISPLAY=%s", socket);
 }
 
 bool server_init(struct maple_server *server)
@@ -101,14 +102,9 @@ bool server_init(struct maple_server *server)
     }
 
     setup_cursor(server);
-    
-    return true;
-}
-
-void server_run(struct maple_server *server)
-{
     setup_socket(server);
-    wl_display_run(server->wl_display);
+
+    return true;
 }
 
 void server_destroy(struct maple_server *server)
