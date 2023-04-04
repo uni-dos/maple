@@ -1,5 +1,5 @@
-#ifndef MAPLE_CURSOR_H
-#define MAPLE_CURSOR_H
+#ifndef MAPLE_SEAT_H
+#define MAPLE_SEAT_H
 #include <wlr/types/wlr_cursor.h>
 #include <wlr/types/wlr_xcursor_manager.h>
 

@@ -1,8 +1,8 @@
 maple_sources = [
-    'cursor.c',
     'maple.c',
     'output.c',
-    'server.c'
+    'seat.c',
+    'view.c'
 ]
 
 maple_dependencies  = [
