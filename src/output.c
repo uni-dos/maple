@@ -1,11 +1,11 @@
-#include "output.h"
-#include "server.h"
 #include <stdlib.h>
 #include <time.h>
 #include <wayland-server-core.h>
 #include <wayland-util.h>
 #include <wlr/util/log.h>
 #include <wlr/types/wlr_output_layout.h>
+#include "output.h"
+#include "server.h"
 
 /* Called every time the output is ready to display a frame */
 static void output_frame_notify(struct wl_listener *listener, void *data) {

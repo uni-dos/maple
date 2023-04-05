@@ -3,7 +3,7 @@
 #include <wlr/types/wlr_cursor.h>
 #include <wlr/types/wlr_xcursor_manager.h>
 
-extern struct maple_server server;
+#include "server.h"
 
 // maybe used to change the cursor image?
 enum maple_cursor_mode {

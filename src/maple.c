@@ -1,9 +1,11 @@
 #include <stdlib.h>
+#include <wayland-util.h>
 #include <wlr/render/allocator.h>
 #include <wlr/render/wlr_renderer.h>
 #include <wlr/types/wlr_compositor.h>
 #include <wlr/types/wlr_data_device.h>
 #include <wlr/types/wlr_subcompositor.h>
+#include <wlr/types/wlr_xdg_shell.h>
 #include <wlr/util/log.h>
 #include "output.h"
 #include "server.h"
@@ -90,9 +92,9 @@ static bool server_init(struct maple_server *server)
     * to dig your fingers in and play with their behavior if you want. Note that
     * the clients cannot set the selection directly without compositor approval,
     * see the handling of the request_set_selection event below.*/
-    wlr_compositor_create(server->wl_display, server->renderer);
-    wlr_subcompositor_create(server->wl_display);
-    wlr_data_device_manager_create(server->wl_display);
+    server->compositor = wlr_compositor_create(server->wl_display, server->renderer);
+    server->subcompositor= wlr_subcompositor_create(server->wl_display);
+    server->data_device_manager = wlr_data_device_manager_create(server->wl_display);
 
 
     set_up_output(server);
@@ -106,6 +108,10 @@ static bool server_init(struct maple_server *server)
     if(!wlr_scene_attach_output_layout(server->scene, server->output_layout)) {
         wlr_log(WLR_ERROR, "Failed to attach output to scene graph");
     }
+
+    wl_list_init(&server->views);
+    server->xdg_shell = wlr_xdg_shell_create(server->wl_display, 5);
+    server->xwayland = wlr_xwayland_create(server->wl_display, server->compositor, true);
 
     setup_socket(server);
 
