@@ -1,7 +1,7 @@
 #ifndef MAPLE_VIEW_H
 #define MAPLE_VIEW_H
 
-#include <wayland-util.h>
+#include <wayland-server-core.h>
 #include "xdg_shell.h"
 
 

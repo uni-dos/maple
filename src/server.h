@@ -36,6 +36,7 @@ struct maple_server {
     struct wlr_xwayland *xwayland;
     struct wl_listener new_xwayland_surface;
 
+    struct maple_seat *seat;
 
     //list of all physical displays/what we can see
     struct wl_list outputs;

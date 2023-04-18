@@ -7,24 +7,26 @@
 #include <wlr/types/wlr_subcompositor.h>
 #include <wlr/types/wlr_xdg_shell.h>
 #include <wlr/util/log.h>
+
 #include "output.h"
+#include "seat.h"
 #include "server.h"
 
 static void server_destroy(struct maple_server *server)
 {
-
+    /* Once wl_display_run returns, we shut down the server. */
     wl_display_destroy_clients(server->wl_display);
     wl_display_destroy(server->wl_display);
 }
 
-static void setup_socket(struct maple_server *server)
+static bool setup_socket(struct maple_server *server)
 {
      const char *socket = wl_display_add_socket_auto(server->wl_display);
 
     if (!socket)
     {
         wlr_backend_destroy(server->backend);
-        return;
+        return false;
     }
 
     /* Start the backend. This will enumerate outputs and inputs, become the DRM
@@ -34,11 +36,13 @@ static void setup_socket(struct maple_server *server)
         wlr_log(WLR_ERROR, "Failed to start backend");
         wlr_backend_destroy(server->backend);
         wl_display_destroy(server->wl_display);
-        return;
+        return false;
     }
 
+    /* Set the WAYLAND_DISPLAY environment variable to our socket */
     setenv("WAYLAND_DISPLAY", socket, true);
     wlr_log(WLR_INFO, "Running maple on WAYLAND_DISPLAY=%s", socket);
+    return true;
 }
 
 static bool server_init(struct maple_server *server)
@@ -109,11 +113,20 @@ static bool server_init(struct maple_server *server)
         wlr_log(WLR_ERROR, "Failed to attach output to scene graph");
     }
 
+    //views
+
     wl_list_init(&server->views);
     server->xdg_shell = wlr_xdg_shell_create(server->wl_display, 5);
     server->xwayland = wlr_xwayland_create(server->wl_display, server->compositor, true);
 
-    setup_socket(server);
+    if (!setup_seat(server)) {
+        wlr_log(WLR_ERROR, "Failed to setup seat");
+        return false;
+    }
+    if (!setup_socket(server)) {
+        wlr_log(WLR_ERROR, "Failed to setup socket");
+        return false;
+    }
 
     return true;
 }
@@ -130,8 +143,12 @@ int main(int argc, char** argv)
         return 1;
     }
 
+    /* Run the Wayland event loop. This does not return until you exit the
+	 * compositor. Starting the backend rigged up all of the necessary event
+	 * loop configuration to listen to libinput events, DRM events, generate
+	 * frame events at the refresh rate, and so on. */
     wl_display_run(server.wl_display);
-    
+
     server_destroy(&server);
 
     return 0;
