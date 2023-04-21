@@ -28,15 +28,16 @@ struct maple_server {
     struct wlr_subcompositor *subcompositor;
 
     struct wlr_data_device_manager *data_device_manager;
-    struct wl_list views;
 
+    struct wl_list views;
     struct wlr_xdg_shell *xdg_shell;
     struct wl_listener new_xdg_surface;
 
     struct wlr_xwayland *xwayland;
     struct wl_listener new_xwayland_surface;
 
-    struct maple_seat *seat;
+    struct maple_cursor *cursor;
+    struct wlr_seat *seat;
 
     //list of all physical displays/what we can see
     struct wl_list outputs;

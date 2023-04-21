@@ -4,13 +4,12 @@
 #include <wayland-server-core.h>
 #include "xdg_shell.h"
 
-
-
 enum maple_view_type {
   MAPLE_VIEW_XDG_SHELL,
   MAPLE_VIEW_XWAYLAND,
 
 };
+
 /* Window state
    Can either be xwayland or xdg-shell windows
    needs to be abstracted to allow both

@@ -1,7 +1,7 @@
 maple_sources = [
     'maple.c',
     'output.c',
-    'seat.c',
+    'cursor.c',
     'view.c'
 ]
 

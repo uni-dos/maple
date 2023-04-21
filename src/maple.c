@@ -9,7 +9,7 @@
 #include <wlr/util/log.h>
 
 #include "output.h"
-#include "seat.h"
+#include "cursor.h"
 #include "server.h"
 
 static void server_destroy(struct maple_server *server)
@@ -19,12 +19,13 @@ static void server_destroy(struct maple_server *server)
     wl_display_destroy(server->wl_display);
 }
 
-static bool setup_socket(struct maple_server *server)
+static bool start_server(struct maple_server *server)
 {
      const char *socket = wl_display_add_socket_auto(server->wl_display);
 
     if (!socket)
     {
+        wlr_log(WLR_ERROR, "Failed to setup socket");
         wlr_backend_destroy(server->backend);
         return false;
     }
@@ -119,14 +120,14 @@ static bool server_init(struct maple_server *server)
     server->xdg_shell = wlr_xdg_shell_create(server->wl_display, 5);
     server->xwayland = wlr_xwayland_create(server->wl_display, server->compositor, true);
 
-    if (!setup_seat(server)) {
-        wlr_log(WLR_ERROR, "Failed to setup seat");
-        return false;
-    }
-    if (!setup_socket(server)) {
-        wlr_log(WLR_ERROR, "Failed to setup socket");
-        return false;
-    }
+
+    // the cursor icon we see on screen
+    server->cursor = setup_cursor(server);
+
+    //seat
+    //gives us a keyboard and maps the pointing device to the cursor
+
+    //keyboard
 
     return true;
 }
@@ -143,6 +144,11 @@ int main(int argc, char** argv)
         return 1;
     }
 
+    if(!start_server(&server))
+    {
+        wlr_log(WLR_ERROR, "Failed to start server");
+        return 1;
+    }
     /* Run the Wayland event loop. This does not return until you exit the
 	 * compositor. Starting the backend rigged up all of the necessary event
 	 * loop configuration to listen to libinput events, DRM events, generate
