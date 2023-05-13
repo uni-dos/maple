@@ -8,7 +8,7 @@
 #include "server.h"
 
 /* Called every time the output is ready to display a frame */
-static void output_frame_notify(struct wl_listener *listener, void *data) {
+static void output_frame(struct wl_listener *listener, void *data) {
     // not doing anyhting with this
     (void) data;
 
@@ -24,7 +24,20 @@ static void output_frame_notify(struct wl_listener *listener, void *data) {
     wlr_scene_output_send_frame_done(scene_output, &now);
 
 }
-static void output_destroy_notify(struct wl_listener * listener, void *data) {
+
+// called when maple is nested in another wm
+static void output_request_state(struct wl_listener *listener, void *data)
+{
+    /* This function is called when the backend requests a new state for
+	 * the output. For example, Wayland and X11 backends request a new mode
+	 * when the output window is resized. */
+    struct maple_output *output = wl_container_of(listener, output, request_state);
+    const struct wlr_output_event_request_state *event = data;
+    wlr_output_commit_state(output->wlr_output, event->state);
+}
+
+
+static void output_destroy(struct wl_listener * listener, void *data) {
     // not doing anything with the data
     (void) data;
 
@@ -37,7 +50,7 @@ static void output_destroy_notify(struct wl_listener * listener, void *data) {
 }
 
 /* Called each time a new display becomes available */
-static void new_output_notify(struct wl_listener *listener, void *data) {
+static void new_output(struct wl_listener *listener, void *data) {
     struct maple_server *server = wl_container_of(listener, server, new_output);
     struct wlr_output *wlr_output = data;
 
@@ -55,9 +68,14 @@ static void new_output_notify(struct wl_listener *listener, void *data) {
     * just pick the monitor's preferred mode, a more sophisticated compositor
     * would let the user configure it. */
     if (!wl_list_empty(&wlr_output->modes)) {
-        struct wlr_output_mode *mode = wl_container_of(wlr_output->modes.prev, mode, link);
+
+        struct wlr_output_mode *mode = wlr_output_preferred_mode(wlr_output);
         wlr_output_set_mode(wlr_output, mode);
         wlr_output_enable(wlr_output, true);
+        if(!wlr_output_commit(wlr_output))
+        {
+            return;
+        }
     }
 
     /* Allocates and configures our state for this output */
@@ -66,12 +84,15 @@ static void new_output_notify(struct wl_listener *listener, void *data) {
     output->wlr_output = wlr_output;
 
     /* Sets up a listener for the frame event */
-    output->frame.notify = output_frame_notify;
+    output->frame.notify = output_frame;
     wl_signal_add(&wlr_output->events.frame, &output->frame);
 
+    /* Sets up a listener for the state request event. */
+	output->request_state.notify = output_request_state;
+	wl_signal_add(&wlr_output->events.request_state, &output->request_state);
 
     /* Sets up a listener for the destroy event */
-    output->destroy.notify = output_destroy_notify;
+    output->destroy.notify = output_destroy;
     wl_signal_add(&wlr_output->events.destroy, &output->destroy);
 
     wl_list_insert(&server->outputs, &output->link);
@@ -99,7 +120,7 @@ void set_up_output(struct maple_server *server) {
     */
     wl_list_init(&server->outputs);
 
-    server->new_output.notify = new_output_notify;
+    server->new_output.notify = new_output;
     wl_signal_add(&server->backend->events.new_output, &server->new_output);
 
 }

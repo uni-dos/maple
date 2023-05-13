@@ -8,14 +8,15 @@
 /* holds the state for the output/display */
 struct maple_output {
 
+    struct wl_list link;
+
     /* the actual display */
     struct wlr_output *wlr_output;
     struct maple_server *server;
 
     struct wl_listener destroy;
+    struct wl_listener request_state;
     struct wl_listener frame;
-
-    struct wl_list link;
 
 };
 
