@@ -63,7 +63,7 @@ static bool server_init(struct maple_server *server)
     * output hardware. The autocreate option will choose the most suitable
     * backend based on the current environment, either a window on Wayland/X or
     * physical hardware.*/
-    server->backend = wlr_backend_autocreate(server->wl_display);
+    server->backend = wlr_backend_autocreate(server->wl_display, NULL);
     if (server->backend == NULL)
     {
         wlr_log(WLR_ERROR, "Failed to create backend");
@@ -89,7 +89,11 @@ static bool server_init(struct maple_server *server)
     * handles the buffer creation, allowing wlroots to render onto the
     * screen */
     server->allocator = wlr_allocator_autocreate(server->backend, server->renderer);
-
+    if (server->allocator == NULL)
+    {
+        wlr_log(WLR_ERROR, "Failed to create allocator");
+        return false;
+    }
     /* This creates some hands-off wlroots interfaces. The compositor is
     * necessary for clients to allocate surfaces, the subcompositor allows to
     * assign the role of subsurfaces to surfaces and the data device manager
@@ -97,7 +101,7 @@ static bool server_init(struct maple_server *server)
     * to dig your fingers in and play with their behavior if you want. Note that
     * the clients cannot set the selection directly without compositor approval,
     * see the handling of the request_set_selection event below.*/
-    server->compositor = wlr_compositor_create(server->wl_display, server->renderer);
+    server->compositor = wlr_compositor_create(server->wl_display, 5, server->renderer);
     server->subcompositor= wlr_subcompositor_create(server->wl_display);
     server->data_device_manager = wlr_data_device_manager_create(server->wl_display);
 
@@ -116,9 +120,9 @@ static bool server_init(struct maple_server *server)
 
     //views
 
-    wl_list_init(&server->views);
-    server->xdg_shell = wlr_xdg_shell_create(server->wl_display, 5);
-    server->xwayland = wlr_xwayland_create(server->wl_display, server->compositor, true);
+    // wl_list_init(&server->views);
+    // server->xdg_shell = wlr_xdg_shell_create(server->wl_display, 5);
+    // server->xwayland = wlr_xwayland_create(server->wl_display, server->compositor, true);
 
 
     // the cursor icon we see on screen

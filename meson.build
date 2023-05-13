@@ -20,7 +20,7 @@ add_project_arguments(
 wayland_server_dep = dependency('wayland-server')
 wayland_protos_dep = dependency('wayland-protocols')
 
-wlroots_ver = ['>=0.16.0', '<0.17.0']
+wlroots_ver = ['>=0.17.0', '<0.18.0']
 
 # use wlroots on system if correct version else build from source
 # subproject name then the dependency name
