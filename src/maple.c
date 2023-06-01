@@ -53,7 +53,7 @@ static bool server_init(struct maple_server *server)
     /* The Wayland display is managed by libwayland. It handles accepting
      * clients from the Unix socket, manging Wayland globals, and so on. */
     server->wl_display = wl_display_create();
-    if (server->wl_display == NULL)
+    if (server->wl_display == nullptr)
     {
         wlr_log(WLR_ERROR, "Failed to create to Wayland display");
         return false;
@@ -63,8 +63,8 @@ static bool server_init(struct maple_server *server)
     * output hardware. The autocreate option will choose the most suitable
     * backend based on the current environment, either a window on Wayland/X or
     * physical hardware.*/
-    server->backend = wlr_backend_autocreate(server->wl_display, NULL);
-    if (server->backend == NULL)
+    server->backend = wlr_backend_autocreate(server->wl_display, nullptr);
+    if (server->backend == nullptr)
     {
         wlr_log(WLR_ERROR, "Failed to create backend");
         return false;
@@ -76,7 +76,7 @@ static bool server_init(struct maple_server *server)
     * supports for shared memory, this configures that for clients.*/
     server->renderer = wlr_renderer_autocreate(server->backend);
 
-    if (server->renderer == NULL)
+    if (server->renderer == nullptr)
     {
         wlr_log(WLR_ERROR, "Failed to create renderer");
         return false;
@@ -89,7 +89,7 @@ static bool server_init(struct maple_server *server)
     * handles the buffer creation, allowing wlroots to render onto the
     * screen */
     server->allocator = wlr_allocator_autocreate(server->backend, server->renderer);
-    if (server->allocator == NULL)
+    if (server->allocator == nullptr)
     {
         wlr_log(WLR_ERROR, "Failed to create allocator");
         return false;

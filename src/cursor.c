@@ -10,7 +10,7 @@
      struct maple_cursor *maple_cursor = calloc(1, sizeof(struct maple_cursor));
 
     if(!maple_cursor)
-        return NULL;
+        return nullptr;
 
     maple_cursor->server = server;
     /* Creates a cursor to track on screen */
@@ -21,7 +21,7 @@
     char *xcursor_size = getenv("XCURSOR_SIZE");
 
     //if XCURSOR_SIZE was not set, make it 24
-    int size = xcursor_size ? strtoul(xcursor_size, NULL,  10) : 24;
+    int size = xcursor_size ? strtoul(xcursor_size, nullptr, 10) : 24;
 
     /* Creates an xcursor manager, another wlroots utility which loads up
     * Xcursor themes to source cursor images from and makes sure that cursor

@@ -3,7 +3,7 @@ project(
     version : '0.0.0-alpha',
     meson_version: '>=0.60.2',
     default_options : [
-        'c_std=c17',
+        'c_std=c2x',
         'warning_level=2'
     ]
 )
