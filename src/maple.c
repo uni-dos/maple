@@ -6,12 +6,13 @@
 #include <wlr/types/wlr_data_device.h>
 #include <wlr/types/wlr_subcompositor.h>
 #include <wlr/types/wlr_xdg_shell.h>
+#include <wlr/xwayland.h>
 #include <wlr/util/log.h>
 
 #include "output.h"
 #include "cursor.h"
 #include "server.h"
-
+#include "view.h"
 static void server_destroy(struct maple_server *server)
 {
     /* Once wl_display_run returns, we shut down the server. */
@@ -109,10 +110,10 @@ static bool server_init(struct maple_server *server)
     set_up_output(server);
 
     /* Create a scene graph. This is a wlroots abstraction that handles all
-    rendering and damage tracking. All the compositor author needs to do
-    is add things that should be rendered to the scene graph at the proper
-    positions and then call wlr_scene_output_commit() to render a frame if
-    necessary. */
+     * rendering and damage tracking. All the compositor author needs to do
+     * is add things that should be rendered to the scene graph at the proper
+     * positions and then call wlr_scene_output_commit() to render a frame if
+     * necessary. */
     server->scene = wlr_scene_create();
     if(!wlr_scene_attach_output_layout(server->scene, server->output_layout)) {
         wlr_log(WLR_ERROR, "Failed to attach output to scene graph");
@@ -120,13 +121,14 @@ static bool server_init(struct maple_server *server)
 
     //views
 
-    // wl_list_init(&server->views);
-    // server->xdg_shell = wlr_xdg_shell_create(server->wl_display, 5);
-    // server->xwayland = wlr_xwayland_create(server->wl_display, server->compositor, true);
+    wl_list_init(&server->views);
+    server->xdg_shell = wlr_xdg_shell_create(server->wl_display, 5);
 
+    server->xwayland = wlr_xwayland_create(server->wl_display, server->compositor, true);
+    //setup_views(server);
 
     // the cursor icon we see on screen
-    server->cursor = setup_cursor(server);
+    setup_cursor(server);
 
     //seat
     //gives us a keyboard and maps the pointing device to the cursor
@@ -135,6 +137,7 @@ static bool server_init(struct maple_server *server)
 
     return true;
 }
+
 int main(int argc, char** argv)
 {
     (void) argc;

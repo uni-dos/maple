@@ -2,7 +2,7 @@
 #define MAPLE_VIEW_H
 
 #include <wayland-server-core.h>
-#include "xdg_shell.h"
+
 
 enum maple_view_type {
   MAPLE_VIEW_XDG_SHELL,
@@ -16,12 +16,13 @@ enum maple_view_type {
 */
 struct maple_view {
 
-    /* Number of windows */
-    struct wl_list views;
+    enum maple_view_type view_type;
+    struct wl_list link;
+
     struct maple_server *server;
 
 
-
+    struct wlr_xdg_toplevel *xdg_top_level;
     struct wlr_scene_tree *scene_tree;
 
     struct wl_listener map;

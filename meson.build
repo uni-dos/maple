@@ -26,7 +26,7 @@ wlroots_ver = ['>=0.17.0', '<0.18.0']
 # subproject name then the dependency name
 wlroots_dep = dependency('wlroots', version : wlroots_ver,
     fallback : ['wlroots', 'wlroots'],
-    default_options : ['examples=false', 'default_library=static'])
+    default_options : ['examples=false', 'default_library=static', 'xwayland=enabled'])
 
 
 xkbcommon_dep = dependency('xkbcommon')

@@ -10,6 +10,11 @@
 #include <wlr/types/wlr_scene.h>
 #include <wlr/xwayland.h>
 
+enum maple_cursor_mode {
+    CURSOR_PASSTHROUGH,
+    CURSOR_MOVE,
+    CURSOR_RESIZE,
+};
 
 // everything needed to be a wayland compositor
 // the server is the wm; holds its state
@@ -34,9 +39,26 @@ struct maple_server {
     struct wl_listener new_xdg_surface;
 
     struct wlr_xwayland *xwayland;
+    struct wl_listener xwayland_ready;
     struct wl_listener new_xwayland_surface;
 
-    struct maple_cursor *cursor;
+    //stuff for the visible cursor
+    enum maple_cursor_mode cursor_mode;
+    struct wlr_cursor *cursor;
+    struct wlr_xcursor_manager *cursor_mngr;
+
+    struct wl_listener cursor_motion;
+    struct wl_listener cursor_motion_absolute;
+
+    // called when a mouse button was pressed
+    struct wl_listener cursor_button;
+
+   // called when the scroll wheel is activated
+    struct wl_listener cursor_axis;
+
+    struct wl_listener cursor_frame;
+    //cursor
+
     struct wlr_seat *seat;
 
     //list of all physical displays/what we can see
