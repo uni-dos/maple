@@ -20,5 +20,5 @@ struct maple_output {
 
 };
 
-void set_up_output(struct maple_server *server);
+bool set_up_output(struct maple_server *server);
 #endif

@@ -7,7 +7,7 @@
 #include "output.h"
 
 /* Called every time the output is ready to display a frame */
-static void output_frame(struct wl_listener *listener, void *data) {
+static void server_output_frame(struct wl_listener *listener, void *data) {
     // not doing anyhting with this
     (void) data;
 
@@ -25,7 +25,7 @@ static void output_frame(struct wl_listener *listener, void *data) {
 }
 
 // called when maple is nested in another wm
-static void output_request_state(struct wl_listener *listener, void *data)
+static void server_output_request_state(struct wl_listener *listener, void *data)
 {
     /* This function is called when the backend requests a new state for
 	 * the output. For example, Wayland and X11 backends request a new mode
@@ -36,7 +36,7 @@ static void output_request_state(struct wl_listener *listener, void *data)
 }
 
 
-static void output_destroy(struct wl_listener * listener, void *data) {
+static void server_output_destroy(struct wl_listener * listener, void *data) {
     // not doing anything with the data
     (void) data;
 
@@ -49,7 +49,7 @@ static void output_destroy(struct wl_listener * listener, void *data) {
 }
 
 /* Called each time a new display becomes available */
-static void new_output(struct wl_listener *listener, void *data) {
+static void server_new_output(struct wl_listener *listener, void *data) {
     struct maple_server *server = wl_container_of(listener, server, new_output);
     struct wlr_output *wlr_output = data;
 
@@ -83,15 +83,15 @@ static void new_output(struct wl_listener *listener, void *data) {
     output->wlr_output = wlr_output;
 
     /* Sets up a listener for the frame event */
-    output->frame.notify = output_frame;
+    output->frame.notify = server_output_frame;
     wl_signal_add(&wlr_output->events.frame, &output->frame);
 
     /* Sets up a listener for the state request event. */
-	output->request_state.notify = output_request_state;
+	output->request_state.notify = server_output_request_state;
 	wl_signal_add(&wlr_output->events.request_state, &output->request_state);
 
     /* Sets up a listener for the destroy event */
-    output->destroy.notify = output_destroy;
+    output->destroy.notify = server_output_destroy;
     wl_signal_add(&wlr_output->events.destroy, &output->destroy);
 
     wl_list_insert(&server->outputs, &output->link);
@@ -108,18 +108,24 @@ static void new_output(struct wl_listener *listener, void *data) {
     wlr_output_layout_add_auto(server->output_layout, wlr_output);
 }
 
-void set_up_output(struct maple_server *server) {
+bool set_up_output(struct maple_server *server) {
 
     /* Creates an output layout, which is a wlroots utility for working with an
     * arrangement of screens in a physical layout. */
     server->output_layout = wlr_output_layout_create();
 
+    if (!server->output_layout)
+    {
+        wlr_log(WLR_ERROR, "Failed to create an output layout");
+        return false;
+    }
     /*Configure a listener to be notified when new outputs are available
     * on the backend.
     */
     wl_list_init(&server->outputs);
 
-    server->new_output.notify = new_output;
+    server->new_output.notify = server_new_output;
     wl_signal_add(&server->backend->events.new_output, &server->new_output);
 
+    return true;
 }

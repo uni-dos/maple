@@ -3,7 +3,6 @@
 #include <wlr/render/allocator.h>
 #include <wlr/render/wlr_renderer.h>
 #include <wlr/types/wlr_compositor.h>
-#include <wlr/types/wlr_data_device.h>
 #include <wlr/types/wlr_subcompositor.h>
 #include <wlr/types/wlr_xcursor_manager.h>
 #include <wlr/types/wlr_xdg_shell.h>
@@ -118,7 +117,11 @@ static bool server_init(struct maple_server *server)
     server->data_device_manager = wlr_data_device_manager_create(server->wl_display);
 
 
-    set_up_output(server);
+    if(!set_up_output(server))
+    {
+        wlr_log(WLR_ERROR, "Failed to initilize output");
+        return false;
+    }
 
     /* Create a scene graph. This is a wlroots abstraction that handles all
      * rendering and damage tracking. All the compositor author needs to do
@@ -136,7 +139,7 @@ static bool server_init(struct maple_server *server)
     server->xdg_shell = wlr_xdg_shell_create(server->wl_display, 5);
 
     server->xwayland = wlr_xwayland_create(server->wl_display, server->compositor, true);
-    //setup_views(server);
+    setup_views(server);
 
     // seat will set up the cursor and keyboard
     if (!setup_seat(server))

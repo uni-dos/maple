@@ -2,6 +2,7 @@
 #define MAPLE_VIEW_H
 
 #include <wayland-server-core.h>
+#include <wlr/types/wlr_scene.h>
 #include "server.h"
 
 enum maple_view_type {
@@ -44,4 +45,6 @@ struct maple_view* desktop_view_at(struct maple_server *server,double x,
               double y, struct wlr_surface **surface, double *sx, double *sy);
 
 void focus_view(struct maple_view *view, struct wlr_surface *surface);
+
+bool setup_views(struct maple_server *server);
 #endif

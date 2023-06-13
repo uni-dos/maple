@@ -5,13 +5,14 @@
 #include <wayland-server-core.h>
 #include <wlr/backend.h>
 #include <wlr/types/wlr_compositor.h>
+#include <wlr/types/wlr_data_device.h>
 #include <wlr/types/wlr_output_layout.h>
 #include <wlr/types/wlr_subcompositor.h>
 #include <wlr/types/wlr_scene.h>
 #include <wlr/xwayland.h>
 
 
-extern struct maple_view;
+ struct maple_view;
 
 enum maple_cursor_mode {
     CURSOR_PASSTHROUGH,
