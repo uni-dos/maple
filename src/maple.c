@@ -14,6 +14,8 @@
 #include "seat.h"
 #include "server.h"
 #include "view.h"
+
+
 static void server_destroy(struct maple_server *server)
 {
     /* Once wl_display_run returns, we shut down the server. */
@@ -87,7 +89,12 @@ static bool server_init(struct maple_server *server)
         return false;
     }
 
-    wlr_renderer_init_wl_display(server->renderer, server->wl_display);
+    bool wl_disp_initilized = wlr_renderer_init_wl_display(server->renderer, server->wl_display);
+    if (!wl_disp_initilized)
+    {
+        wlr_log(WLR_ERROR, "Failed to initilize wl_display");
+        return false;
+    }
 
     /* Autocreates an allocator for us.
     * The allocator is the bridge between the renderer and the backend. It
@@ -132,8 +139,11 @@ static bool server_init(struct maple_server *server)
     //setup_views(server);
 
     // seat will set up the cursor and keyboard
-
-    setup_seat(server);
+    if (!setup_seat(server))
+    {
+        wlr_log(WLR_ERROR, "Failed to setup the seat");
+        return false;
+    }
 
     return true;
 }

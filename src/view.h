@@ -2,7 +2,7 @@
 #define MAPLE_VIEW_H
 
 #include <wayland-server-core.h>
-
+#include "server.h"
 
 enum maple_view_type {
   MAPLE_VIEW_XDG_SHELL,
@@ -40,4 +40,8 @@ struct maple_view {
     struct wl_listener request_fullscreen;
 };
 
+struct maple_view* desktop_view_at(struct maple_server *server,double x,
+              double y, struct wlr_surface **surface, double *sx, double *sy);
+
+void focus_view(struct maple_view *view, struct wlr_surface *surface);
 #endif
