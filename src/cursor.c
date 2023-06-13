@@ -1,5 +1,8 @@
+#include <wlr/types/wlr_cursor.h>
+#include <wlr/types/wlr_seat.h>
+#include <wlr/types/wlr_xcursor_manager.h>
+
 #include "cursor.h"
-#include "server.h"
 #include <stdlib.h>
 
 bool setup_cursor(struct maple_server *server) {
@@ -15,7 +18,7 @@ bool setup_cursor(struct maple_server *server) {
     char *xcursor_size = getenv("XCURSOR_SIZE");
 
     //if XCURSOR_SIZE was not set, make it 24
-    int size = xcursor_size ? strtoul(xcursor_size, nullptr, 10) : 24;
+    unsigned int size = xcursor_size ? strtoul(xcursor_size, nullptr, 10) : 24;
 
     /* Creates an xcursor manager, another wlroots utility which loads up
     * Xcursor themes to source cursor images from and makes sure that cursor

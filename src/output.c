@@ -5,7 +5,6 @@
 #include <wlr/util/log.h>
 #include <wlr/types/wlr_output_layout.h>
 #include "output.h"
-#include "server.h"
 
 /* Called every time the output is ready to display a frame */
 static void output_frame(struct wl_listener *listener, void *data) {

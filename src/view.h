@@ -22,6 +22,10 @@ struct maple_view {
     struct maple_server *server;
 
 
+    struct wlr_surface *surface; // NULL for unmapped views
+    struct wlr_xdg_surface *xdg_surface;
+    struct wlr_xwayland_surface *xwayland_surface;
+
     struct wlr_xdg_toplevel *xdg_top_level;
     struct wlr_scene_tree *scene_tree;
 

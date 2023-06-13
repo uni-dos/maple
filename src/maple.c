@@ -5,18 +5,22 @@
 #include <wlr/types/wlr_compositor.h>
 #include <wlr/types/wlr_data_device.h>
 #include <wlr/types/wlr_subcompositor.h>
+#include <wlr/types/wlr_xcursor_manager.h>
 #include <wlr/types/wlr_xdg_shell.h>
 #include <wlr/xwayland.h>
 #include <wlr/util/log.h>
 
 #include "output.h"
-#include "cursor.h"
+#include "seat.h"
 #include "server.h"
 #include "view.h"
 static void server_destroy(struct maple_server *server)
 {
     /* Once wl_display_run returns, we shut down the server. */
     wl_display_destroy_clients(server->wl_display);
+    wlr_scene_node_destroy(&server->scene->tree.node);
+    wlr_xcursor_manager_destroy(server->cursor_mngr);
+    wlr_output_layout_destroy(server->output_layout);
     wl_display_destroy(server->wl_display);
 }
 
@@ -127,13 +131,9 @@ static bool server_init(struct maple_server *server)
     server->xwayland = wlr_xwayland_create(server->wl_display, server->compositor, true);
     //setup_views(server);
 
-    // the cursor icon we see on screen
-    setup_cursor(server);
+    // seat will set up the cursor and keyboard
 
-    //seat
-    //gives us a keyboard and maps the pointing device to the cursor
-
-    //keyboard
+    setup_seat(server);
 
     return true;
 }
