@@ -1,5 +1,6 @@
 #ifndef MAPLE_SEAT_H
 #define MAPLE_SEAT_H
+#include <wlr/types/wlr_keyboard.h>
 #include "server.h"
 
 struct maple_keyboard {

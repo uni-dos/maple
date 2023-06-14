@@ -141,7 +141,7 @@ static bool server_init(struct maple_server *server)
     server->xwayland = wlr_xwayland_create(server->wl_display, server->compositor, true);
     setup_views(server);
 
-    // seat will set up the cursor and keyboard
+    // seat will set up the cursor, pointer device, and keyboard
     if (!setup_seat(server))
     {
         wlr_log(WLR_ERROR, "Failed to setup the seat");
@@ -167,6 +167,7 @@ int main(int argc, char** argv)
     if(!start_server(&server))
     {
         wlr_log(WLR_ERROR, "Failed to start server");
+        server_destroy(&server);
         return 1;
     }
     /* Run the Wayland event loop. This does not return until you exit the

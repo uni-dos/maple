@@ -12,7 +12,7 @@
 #include <wlr/xwayland.h>
 
 
- struct maple_view;
+struct maple_view;
 
 enum maple_cursor_mode {
     CURSOR_PASSTHROUGH,
