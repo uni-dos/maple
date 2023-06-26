@@ -3,6 +3,7 @@
 
 #include <wayland-server-core.h>
 #include <wlr/types/wlr_scene.h>
+#include <wlr/types/wlr_xdg_shell.h>
 #include "server.h"
 
 enum maple_view_type {
@@ -27,7 +28,7 @@ struct maple_view {
     struct wlr_xdg_surface *xdg_surface;
     struct wlr_xwayland_surface *xwayland_surface;
 
-    struct wlr_xdg_toplevel *xdg_top_level;
+    struct wlr_xdg_toplevel *xdg_toplevel;
     struct wlr_scene_tree *scene_tree;
 
     struct wl_listener map;

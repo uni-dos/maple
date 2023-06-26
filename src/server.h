@@ -11,7 +11,6 @@
 #include <wlr/types/wlr_scene.h>
 #include <wlr/xwayland.h>
 
-
 struct maple_view;
 
 enum maple_cursor_mode {

@@ -1,16 +1,49 @@
 #include <wlr/types/wlr_seat.h>
 #include "view.h"
 
+/*
+    view is heavily inspired from stage 
+
+
+*/
+
+static void server_new_xdg_surface(struct wl_listener *listener, void * data)
+{
+
+}
+
+static void server_xwayland_ready(struct wl_listener *listener, void * data)
+{
+
+}
+
+static void server_new_xwayland_surface(struct wl_listener *listener, void * data)
+{
+
+}
+
 
 
 bool setup_views(struct maple_server *server)
 {
 
 
-    // server.new_xdg_surface.notify = server_new_xdg_surface;
-	// wl_signal_add(&server.xdg_shell->events.new_surface,
-	// 		&server.new_xdg_surface);
+     server->new_xdg_surface.notify = server_new_xdg_surface;
+	 wl_signal_add(&server->xdg_shell->events.new_surface,
+	 		&server->new_xdg_surface);
 
+    if (server->xwayland)
+    {
+        server->xwayland_ready.notify = server_xwayland_ready;
+        wl_signal_add(&server->xwayland->events.ready, &server->xwayland_ready);
+
+
+        server->new_xwayland_surface.notify = server_new_xwayland_surface;
+        wl_signal_add(&server->xwayland->events.new_surface, &server->new_xwayland_surface);
+
+        setenv("DISPLAY", server->xwayland->display_name, true);
+
+    }
     return true;
 }
 struct maple_view* desktop_view_at(struct maple_server *server,double lx, double ly,

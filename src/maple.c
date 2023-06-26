@@ -14,7 +14,6 @@
 #include "server.h"
 #include "view.h"
 
-
 static void server_destroy(struct maple_server *server)
 {
     /* Once wl_display_run returns, we shut down the server. */
@@ -139,6 +138,8 @@ static bool server_init(struct maple_server *server)
     server->xdg_shell = wlr_xdg_shell_create(server->wl_display, 5);
 
     server->xwayland = wlr_xwayland_create(server->wl_display, server->compositor, true);
+    
+
     setup_views(server);
 
     // seat will set up the cursor, pointer device, and keyboard

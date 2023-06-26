@@ -23,17 +23,105 @@ static void server_new_pointer(struct maple_server *server, struct wlr_input_dev
 
 void keyboard_handle_modifiers(struct wl_listener *listener, void *data)
 {
+    /* This event is raised when a modifier key, such as shift or alt, is
+	 * pressed. We simply communicate this to the client. */
+    struct maple_keyboard *keyboard = wl_container_of(listener, keyboard, modifiers);
 
+    (void) data;
+    /*
+	 * A seat can only have one keyboard, but this is a limitation of the
+	 * Wayland protocol - not wlroots. We assign all connected keyboards to the
+	 * same seat. You can swap out the underlying wlr_keyboard like this and
+	 * wlr_seat handles this transparently.
+	 */
+    wlr_seat_set_keyboard(keyboard->server->seat, keyboard->wlr_keyboard);
+
+    /* Send modifiers to the client. */
+    wlr_seat_keyboard_notify_modifiers(keyboard->server->seat, &keyboard->wlr_keyboard->modifiers);
 }
+
+bool handle_keybindings(struct maple_server *server, xkb_keysym_t sym)
+{
+    /*
+	 * Here we handle compositor keybindings. This is when the compositor is
+	 * processing keys, rather than passing them on to the client for its own
+	 * processing.
+	 *
+	 * This function assumes MOD5 is held down.
+	 */
+
+    switch (sym)
+    {
+        case XKB_KEY_Escape:
+            wl_display_terminate(server->wl_display);
+            break;
+        case XKB_KEY_Tab:
+            if (wl_list_length(&server->views) > 1)
+            {
+               struct maple_view *next_view = wl_container_of(server->views.prev, next_view, link);
+               focus_view(next_view, next_view->xdg_toplevel->base->surface);
+            }
+
+            break;
+        default:
+            return false;
+    }
+
+    return true;
+}
+
 
 void keyboard_handle_key(struct wl_listener *listener, void *data)
 {
+    /* This event is raised when a key is pressed or released. */
+    struct maple_keyboard *keyboard = wl_container_of(listener, keyboard, key);
+    struct maple_server *server = keyboard->server;
+    struct wlr_keyboard_key_event *event = data;
+    struct wlr_seat *seat = server->seat;
 
+    /* Translate libinput keycode -> xkbcommon */
+    uint32_t keycode = event->keycode + 8;
+
+    /* Get a list of keysyms based on the keymap for this keyboard */
+    const xkb_keysym_t *syms;
+
+    int nsyms = xkb_state_key_get_syms(keyboard->wlr_keyboard->xkb_state, keycode, &syms);
+
+    bool handled = false;
+    uint32_t modifiers = wlr_keyboard_get_modifiers(keyboard->wlr_keyboard);
+
+    if ((modifiers & WLR_MODIFIER_LOGO) && event->state == WL_KEYBOARD_KEY_STATE_PRESSED)
+    {
+        /* If alt is held down and this button was pressed, we attempt to
+		 * process it as a compositor keybinding. */
+        for (int i = 0; i < nsyms; i++)
+        {
+            handled = handle_keybindings(server, syms[i]);
+        }
+    }
+
+    if (!handled)
+    {
+        /* Otherwise, we pass it along to the client. */
+        wlr_seat_set_keyboard(seat, keyboard->wlr_keyboard);
+        wlr_seat_keyboard_notify_key(seat, event->time_msec, event->keycode, event->state);
+    }
 }
 
 void keyboard_handle_destroy(struct wl_listener *listener, void *data)
 {
+    /* This event is raised by the keyboard base wlr_input_device to signal
+	 * the destruction of the wlr_keyboard. It will no longer receive events
+	 * and should be destroyed.
+	 */
+    struct maple_keyboard *keyboard = wl_container_of(listener, keyboard, destroy);
 
+    wl_list_remove(&keyboard->modifiers.link);
+    wl_list_remove(&keyboard->key.link);
+    wl_list_remove(&keyboard->destroy.link);
+    wl_list_remove(&keyboard->link);
+    (void) data;
+    free(keyboard);
 }
 
 static void server_new_keyboard(struct maple_server *server, struct wlr_input_device *device)
@@ -61,7 +149,6 @@ static void server_new_keyboard(struct maple_server *server, struct wlr_input_de
 
 
     /* Here we set up listeners for keyboard events. */
-    //TODO implement these
     keyboard->modifiers.notify = keyboard_handle_modifiers;
 	wl_signal_add(&wlr_keyboard->events.modifiers, &keyboard->modifiers);
 

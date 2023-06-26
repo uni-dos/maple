@@ -14,7 +14,59 @@ static void process_cursor_move(struct maple_server *server)
 
 static void process_cursor_resize(struct maple_server *server, uint32_t time)
 {
-    //TODO
+    /*
+	 * Resizing the grabbed view can be a little bit complicated, because we
+	 * could be resizing from any corner or edge. This not only resizes the view
+	 * on one or two axes, but can also move the view if you resize from the top
+	 * or left edges (or top-left corner).
+	 *
+	 * Note that I took some shortcuts here. In a more fleshed-out compositor,
+	 * you'd wait for the client to prepare a buffer at the new size, then
+	 * commit any movement that was prepared.
+	 */
+    struct maple_view *view = server->grabbed_view;
+
+    double border_x = server->cursor->x - server->grab_x;
+    double border_y = server->cursor->y- server->grab_y;
+
+    int new_left = server->grab_geobox.x;
+	int new_right = server->grab_geobox.x + server->grab_geobox.width;
+	int new_top = server->grab_geobox.y;
+	int new_bottom = server->grab_geobox.y + server->grab_geobox.height;
+
+	if (server->resize_edges & WLR_EDGE_TOP) {
+		new_top = border_y;
+		if (new_top >= new_bottom) {
+			new_top = new_bottom - 1;
+		}
+	} else if (server->resize_edges & WLR_EDGE_BOTTOM) {
+		new_bottom = border_y;
+		if (new_bottom <= new_top) {
+			new_bottom = new_top + 1;
+		}
+	}
+	if (server->resize_edges & WLR_EDGE_LEFT) {
+		new_left = border_x;
+		if (new_left >= new_right) {
+			new_left = new_right - 1;
+		}
+	} else if (server->resize_edges & WLR_EDGE_RIGHT) {
+		new_right = border_x;
+		if (new_right <= new_left) {
+			new_right = new_left + 1;
+		}
+	}
+
+	struct wlr_box geo_box;
+	wlr_xdg_surface_get_geometry(view->xdg_toplevel->base, &geo_box);
+	wlr_scene_node_set_position(&view->scene_tree->node,
+		new_left - geo_box.x, new_top - geo_box.y);
+
+	int new_width = new_right - new_left;
+	int new_height = new_bottom - new_top;
+	wlr_xdg_toplevel_set_size(view->xdg_toplevel, new_width, new_height);
+
+    (void) time;
 }
 
 static void process_cursor_motion(struct maple_server *server, uint32_t time)
@@ -180,10 +232,12 @@ bool setup_cursor(struct maple_server *server)
 {
     /* Creates a cursor to track on screen */
     server->cursor = wlr_cursor_create();
+
     if (!server->cursor) {
         return false;
     }
-    server->cursor_mode = CURSOR_PASSTHROUGH;
+
+    wlr_cursor_attach_output_layout(server->cursor, server->output_layout);
 
     char *xcursor_theme = getenv("XCURSOR_THEME");
     char *xcursor_size = getenv("XCURSOR_SIZE");
