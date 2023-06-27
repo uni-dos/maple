@@ -98,6 +98,7 @@ static void process_cursor_motion(struct maple_server *server, uint32_t time)
 		 * around the screen, not over any views. */
         wlr_xcursor_manager_set_cursor_image(server->cursor_mngr,
                         server->cursor_mngr->name, server->cursor);
+        //TODO update?
     }
 
     if (surface)

@@ -7,9 +7,8 @@
 #include "server.h"
 
 enum maple_view_type {
-  MAPLE_VIEW_XDG_SHELL,
-  MAPLE_VIEW_XWAYLAND,
-
+  VIEW_XDG,
+  VIEW_X11,
 };
 
 /* Window state
