@@ -15,6 +15,7 @@ enum maple_view_type {
    Can either be xwayland or xdg-shell windows
    needs to be abstracted to allow both
 */
+
 struct maple_view {
 
     enum maple_view_type view_type;

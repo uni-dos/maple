@@ -163,7 +163,7 @@ static void server_cursor_motion_absolute(struct wl_listener *listener, void *da
     process_cursor_motion(server, event->time_msec);
 }
 
-static void reset_cursor_mode(struct maple_server *server)
+void reset_cursor_mode(struct maple_server *server)
 {
     /* Reset the cursor mode to passthrough. */
     server->cursor_mode = CURSOR_PASSTHROUGH;

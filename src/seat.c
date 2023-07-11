@@ -80,6 +80,7 @@ void keyboard_handle_key(struct wl_listener *listener, void *data)
     struct wlr_seat *seat = server->seat;
 
     /* Translate libinput keycode -> xkbcommon */
+    // seems to be adding 8
     uint32_t keycode = event->keycode + 8;
 
     /* Get a list of keysyms based on the keymap for this keyboard */
@@ -92,7 +93,7 @@ void keyboard_handle_key(struct wl_listener *listener, void *data)
 
     if ((modifiers & WLR_MODIFIER_LOGO) && event->state == WL_KEYBOARD_KEY_STATE_PRESSED)
     {
-        /* If alt is held down and this button was pressed, we attempt to
+        /* If super is held down and this button was pressed, we attempt to
 		 * process it as a compositor keybinding. */
         for (int i = 0; i < nsyms; i++)
         {
