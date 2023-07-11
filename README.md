@@ -1,6 +1,6 @@
 # Maple
 
-An attempt at creating a floating, wayland compositor. Based on [tinywl] (https://gitlab.freedesktop.org/wlroots/wlroots/-/blob/master/tinywl/tinywl.c) and inspired from various other wayland compositors.
+An attempt at creating a floating, wayland compositor. Based on [tinywl](https://gitlab.freedesktop.org/wlroots/wlroots/-/blob/master/tinywl/tinywl.c) and inspired from various other wayland compositors.
 
 
 ## Why another wayland compositor
