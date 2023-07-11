@@ -3,7 +3,9 @@ maple_sources = [
     'maple.c',
     'output.c',
     'seat.c',
-    'view.c'
+    'view.c',
+    'xdg.c',
+    'xwayland.c',
 ]
 
 maple_dependencies  = [
@@ -16,6 +18,7 @@ maple_dependencies  = [
 executable(
     meson.project_name(),
     maple_sources,
+    include_directories : [inc_dir],
     dependencies : maple_dependencies,
     install : true,
 )

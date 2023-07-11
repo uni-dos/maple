@@ -17,6 +17,9 @@ add_project_arguments(
     ],
     language : 'c')
 
+
+inc_dir = include_directories('include')
+
 wayland_server_dep = dependency('wayland-server')
 wayland_protos_dep = dependency('wayland-protocols')
 
@@ -30,7 +33,6 @@ wlroots_dep = dependency('wlroots', version : wlroots_ver,
 
 
 xkbcommon_dep = dependency('xkbcommon')
-
 libinput_dep = dependency('libinput')
 
 parson_dep = dependency('parson', fallback : ['parson', 'parson'],

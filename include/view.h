@@ -25,6 +25,7 @@ struct maple_view {
 
 
     struct wlr_surface *surface; // NULL for unmapped views
+    
     struct wlr_xdg_surface *xdg_surface;
     struct wlr_xwayland_surface *xwayland_surface;
 

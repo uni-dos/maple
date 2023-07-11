@@ -15,7 +15,7 @@ static void server_output_frame(struct wl_listener *listener, void *data) {
     struct wlr_scene *scene = output->server->scene;
     struct wlr_scene_output *scene_output = wlr_scene_get_scene_output(scene, output->wlr_output);
 
-    wlr_scene_output_commit(scene_output);
+    wlr_scene_output_commit(scene_output, nullptr);
 
     struct timespec now;
 
@@ -70,16 +70,25 @@ static void server_new_output(struct wl_listener *listener, void *data) {
 
     if (mode != nullptr)
     {
-        struct wlr_output_state state = {0};
-        //wlr_output_state_init(&state);
-        wlr_output_state_set_mode(&state, mode);
+        struct wlr_output_state state;
+
+        wlr_output_state_init(&state);
         wlr_output_state_set_enabled(&state, true);
 
-        if (!wlr_output_commit_state(wlr_output, &state))
+        /* Some backends don't have modes. DRM+KMS does, and we need to set a mode
+        * before we can use the output. The mode is a tuple of (width, height,
+        * refresh rate), and each monitor supports only a specific set of modes. We
+        * just pick the monitor's preferred mode, a more sophisticated compositor
+        * would let the user configure it. */
+
+        struct wlr_output_mode *mode = wlr_output_preferred_mode(wlr_output);
+
+        if (mode != nullptr)
         {
-            wlr_output_state_finish(&state);
-            return;
+            wlr_output_state_set_mode(&state, mode);
         }
+        /* Atomically applies the new output state. */
+        wlr_output_commit_state(wlr_output, &state);
 
         wlr_output_state_finish(&state);
     }
