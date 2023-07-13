@@ -71,10 +71,6 @@ void focus_view(struct maple_view *view, struct wlr_surface *surface)
     if (prev_surface)
     {
 
-        // if (wlr_surface_is_xwayland_surface(prev_surface))
-        // {
-
-        // }
         /*
 		 * Deactivate the previously focused surface. This lets the client know
 		 * it no longer has focus and the client will repaint accordingly, e.g.
@@ -119,17 +115,17 @@ bool setup_views(struct maple_server *server)
 	 wl_signal_add(&server->xdg_shell->events.new_surface,
 	 		&server->new_xdg_surface);
 
-    if (server->xwayland)
-    {
-        server->xwayland_ready.notify = server_xwayland_ready;
-        wl_signal_add(&server->xwayland->events.ready, &server->xwayland_ready);
+    // if (server->xwayland)
+    // {
+    //     server->xwayland_ready.notify = server_xwayland_ready;
+    //     wl_signal_add(&server->xwayland->events.ready, &server->xwayland_ready);
 
 
-        server->new_xwayland_surface.notify = server_new_xwayland_surface;
-        wl_signal_add(&server->xwayland->events.new_surface, &server->new_xwayland_surface);
+    //     server->new_xwayland_surface.notify = server_new_xwayland_surface;
+    //     wl_signal_add(&server->xwayland->events.new_surface, &server->new_xwayland_surface);
 
-        setenv("DISPLAY", server->xwayland->display_name, true);
+    //     setenv("DISPLAY", server->xwayland->display_name, true);
 
-    }
+    // }
     return true;
 }

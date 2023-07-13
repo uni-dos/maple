@@ -1,3 +1,4 @@
+
 #include <wlr/types/wlr_cursor.h>
 #include <wlr/types/wlr_seat.h>
 #include <wlr/types/wlr_xcursor_manager.h>
@@ -96,9 +97,8 @@ static void process_cursor_motion(struct maple_server *server, uint32_t time)
         /* If there's no view under the cursor, set the cursor image to a
 		 * default. This is what makes the cursor image appear when you move it
 		 * around the screen, not over any views. */
-        wlr_xcursor_manager_set_cursor_image(server->cursor_mngr,
-                        server->cursor_mngr->name, server->cursor);
-        //TODO update?
+        wlr_cursor_set_xcursor(server->cursor,
+                        server->cursor_mngr, getenv("XCURSOR_THEME"));
     }
 
     if (surface)

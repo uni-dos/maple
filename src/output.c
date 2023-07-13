@@ -15,6 +15,7 @@ static void server_output_frame(struct wl_listener *listener, void *data) {
     struct wlr_scene *scene = output->server->scene;
     struct wlr_scene_output *scene_output = wlr_scene_get_scene_output(scene, output->wlr_output);
 
+    /* Render the scene if needed and commit the output */
     wlr_scene_output_commit(scene_output, nullptr);
 
     struct timespec now;

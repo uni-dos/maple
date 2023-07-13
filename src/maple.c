@@ -1,4 +1,6 @@
+#include <getopt.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <wayland-util.h>
 #include <wlr/render/allocator.h>
 #include <wlr/render/wlr_renderer.h>
@@ -135,10 +137,10 @@ static bool server_init(struct maple_server *server)
     //views
 
     wl_list_init(&server->views);
-    server->xdg_shell = wlr_xdg_shell_create(server->wl_display, 5);
+    server->xdg_shell = wlr_xdg_shell_create(server->wl_display, 3);
 
-    server->xwayland = wlr_xwayland_create(server->wl_display, server->compositor, true);
-    
+    //server->xwayland = wlr_xwayland_create(server->wl_display, server->compositor, true);
+
 
     setup_views(server);
 
@@ -154,8 +156,24 @@ static bool server_init(struct maple_server *server)
 
 int main(int argc, char** argv)
 {
-    (void) argc;
-    (void) argv;
+    char *startup_cmd = NULL;
+
+	int c;
+	while ((c = getopt(argc, argv, "s:h")) != -1) {
+		switch (c) {
+		case 's':
+			startup_cmd = optarg;
+			break;
+		default:
+			printf("Usage: %s [-s startup command]\n", argv[0]);
+			return 0;
+		}
+	}
+	if (optind < argc) {
+		printf("Usage: %s [-s startup command]\n", argv[0]);
+		return 0;
+	}
+
 
     struct maple_server server = {0};
 
@@ -171,6 +189,16 @@ int main(int argc, char** argv)
         server_destroy(&server);
         return 1;
     }
+
+    if (startup_cmd)
+    {
+		if (fork() == 0)
+		{
+			execl("/bin/sh", "/bin/sh", "-c", startup_cmd, (void *)NULL);
+		}
+	}
+
+
     /* Run the Wayland event loop. This does not return until you exit the
 	 * compositor. Starting the backend rigged up all of the necessary event
 	 * loop configuration to listen to libinput events, DRM events, generate

@@ -1,30 +1,103 @@
 #include "xdg.h"
 #include "view.h"
 #include "cursor.h"
+#include <wlr/types/wlr_cursor.h>
+#include <wlr/types/wlr_xcursor_manager.h>
+
 static void begin_interactive(struct maple_view *view,
                     enum maple_cursor_mode mode, uint32_t edges)
 {
+    /* This function sets up an interactive move or resize operation, where the
+	 * compositor stops propegating pointer events to clients and instead
+	 * consumes them itself, to move or resize windows. */
+
+    struct maple_server *server = view->server;
+
+    struct wlr_surface *focued_surface = server->seat->pointer_state.focused_surface;
+
+    if (view->xdg_toplevel->base->surface != wlr_surface_get_root_surface(focued_surface))
+    {
+        /* Deny move/resize requests from unfocused clients. */
+        return;
+    }
+
+    server->grabbed_view = view;
+    server->cursor_mode = mode;
+
+
+    if (mode == CURSOR_MOVE)
+    {
+            server->grab_x = server->cursor->x - view->scene_tree->node.x;
+            server->grab_y = server->cursor->y - view->scene_tree->node.y;
+	}
+    else
+    {
+            struct wlr_box geo_box;
+            wlr_xdg_surface_get_geometry(view->xdg_toplevel->base, &geo_box);
+
+            double border_x = (view->scene_tree->node.x + geo_box.x) +
+                ((edges & WLR_EDGE_RIGHT) ? geo_box.width : 0);
+            double border_y = (view->scene_tree->node.y + geo_box.y) +
+                ((edges & WLR_EDGE_BOTTOM) ? geo_box.height : 0);
+            server->grab_x = server->cursor->x - border_x;
+            server->grab_y = server->cursor->y - border_y;
+
+            server->grab_geobox = geo_box;
+            server->grab_geobox.x += view->scene_tree->node.x;
+            server->grab_geobox.y += view->scene_tree->node.y;
+
+            server->resize_edges = edges;
+	}
+
 
 }
 
 static void xdg_toplevel_request_move(struct wl_listener *listener, void *data)
 {
+    /* This event is raised when a client would like to begin an interactive
+	 * move, typically because the user clicked on their client-side
+	 * decorations. Note that a more sophisticated compositor should check the
+	 * provided serial against a list of button press serials sent to this
+	 * client, to prevent the client from requesting this whenever they want. */
+	struct maple_view *view = wl_container_of(listener, view, request_move);
+	begin_interactive(view, CURSOR_MOVE, 0);
 
 }
 
 static void xdg_toplevel_request_resize(struct wl_listener *listener, void *data)
 {
+    /* This event is raised when a client would like to begin an interactive
+	 * resize, typically because the user clicked on their client-side
+	 * decorations. Note that a more sophisticated compositor should check the
+	 * provided serial against a list of button press serials sent to this
+	 * client, to prevent the client from requesting this whenever they want. */
+	struct wlr_xdg_toplevel_resize_event *event = data;
+	struct maple_view *view = wl_container_of(listener, view, request_resize);
+	begin_interactive(view, CURSOR_RESIZE, event->edges);
 
 }
 
-
+//TODO Actually maximize
 static void xdg_toplevel_request_maximize(struct wl_listener *listener, void *data)
 {
+    /* This event is raised when a client would like to maximize itself,
+	 * typically because the user clicked on the maximize button on
+	 * client-side decorations. tinywl doesn't support maximization, but
+	 * to conform to xdg-shell protocol we still must send a configure.
+	 * wlr_xdg_surface_schedule_configure() is used to send an empty reply. */
+	struct maple_view *view =
+		wl_container_of(listener, view, request_maximize);
+	wlr_xdg_surface_schedule_configure(view->xdg_toplevel->base);
 
 }
 
 static void xdg_toplevel_request_fullscreen(struct wl_listener *listener, void *data)
 {
+    /* Just as with request_maximize, we must send a configure here. */
+	struct maple_view *view =
+		wl_container_of(listener, view, request_fullscreen);
+	
+	wlr_xdg_surface_schedule_configure(view->xdg_toplevel->base);
 
 }
 

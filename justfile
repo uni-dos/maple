@@ -14,7 +14,7 @@ build:
   samu -C build/
 
 run:
-  ./build/src/maple
+  ./build/src/maple -s konsole
 
 build-run: build run
 
